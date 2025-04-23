@@ -81,6 +81,33 @@ class BarangController {
             return json_encode(["message" => "Terjadi kesalahan saat mengambil data barang"]);
         }
     }
+
+    public function getBarangByJenis($jenis) {
+        $conn = (new DB())->getConnection();
+    
+        $query = "CALL getBarangByJenis(?)";
+    
+        $stmt = $conn->prepare($query);
+        if ($stmt === false) {
+            return json_encode(["message" => "Terjadi kesalahan saat mempersiapkan query"]);
+        }
+    
+        $stmt->bind_param("s", $jenis);
+    
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+    
+            // Cek apakah data ditemukan
+            if ($result->num_rows > 0) {
+                $barang = $result->fetch_assoc();
+                return json_encode([$barang]); 
+            } else {
+                return json_encode(["message" => "Tidak ada barang ditemukan"]);
+            }
+        } else {
+            return json_encode(["message" => "Terjadi kesalahan saat mengambil data barang"]);
+        }
+    }
     
     public function updateBarang($id, $nama, $jenis, $harga, $stok) {
         $conn = (new DB())->getConnection();

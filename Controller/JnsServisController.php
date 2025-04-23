@@ -72,8 +72,35 @@ class JnsServisController {
     
             // Cek apakah data ditemukan
             if ($result->num_rows > 0) {
-                $barang = $result->fetch_assoc();
-                return json_encode($barang); 
+                $jenisServis = $result->fetch_assoc();
+                return json_encode($jenisServis); 
+            } else {
+                return json_encode(["message" => "Tidak ada barang ditemukan"]);
+            }
+        } else {
+            return json_encode(["message" => "Terjadi kesalahan saat mengambil data barang"]);
+        }
+    }
+
+    public function getJnsServisByMobil($id) {
+        $conn = (new DB())->getConnection();
+    
+        $query = "CALL getJenisServisByMobil(?)";
+    
+        $stmt = $conn->prepare($query);
+        if ($stmt === false) {
+            return json_encode(["message" => "Terjadi kesalahan saat mempersiapkan query"]);
+        }
+    
+        $stmt->bind_param("i", $id);
+    
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+    
+            // Cek apakah data ditemukan
+            if ($result->num_rows > 0) {
+                $jenisServis = $result->fetch_assoc();
+                return json_encode([$jenisServis]); 
             } else {
                 return json_encode(["message" => "Tidak ada barang ditemukan"]);
             }
